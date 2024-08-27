@@ -1,0 +1,21 @@
+synthesis_model:
+  backend: "vllm" # or "openai"
+  model: "meta-llama/Meta-Llama-3.1-8B-Instruct"
+  served_model_name: "Meta-Llama-3.1-8B-Instruct"
+  chat_template: "{{- bos_token }}{%- for message in messages %}{{- '<|start_header_id|>' + message['role'] + '<|end_header_id|>\n\n'+ message['content'] | trim + '<|eot_id|>' }}{%- endfor %}{%- if add_generation_prompt %}{{- '<|start_header_id|>assistant<|end_header_id|>\n\n' }}{%- endif %}"
+  base_url: "http://localhost:1234/v1" # if using openai backend
+  api_key: "EMPTY" # if using openai backend
+
+  temperature: 0.8
+  max_tokens: 512
+  top_p: 0.9
+  stop: ["<|eot_id|>"]
+
+verification_model: # if Null then use the synthesis model to verify
+
+dataset:
+  path: "slm-research-vn/ultrachat_200k"
+  instruction_column: "instruction"
+  messages_column: "messages"
+
+save_dir: "synthesis_data/ultrachat_200k"
