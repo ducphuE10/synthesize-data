@@ -18,7 +18,7 @@ class ModelConfig(BaseModel):
 
     @field_validator('backend')
     def validate_backend(cls, v):
-        if v not in {'vllm', 'openai'}:
+        if v not in {'openai'}:
             raise ValueError('backend must be either "vllm" or "openai"')
         return v
 
@@ -27,12 +27,14 @@ class DatasetConfig(BaseModel):
     path: str
     instruction_column: str
     messages_column: str
+    num_test: int | None = None
 
 
 class Config(BaseModel):
     synthesis_model: ModelConfig
     verification_model: ModelConfig | None = None
     dataset: DatasetConfig
+    batch_size: int | None = None
     save_dir: str
 
 

@@ -1,21 +1,24 @@
 synthesis_model:
-  backend: "vllm" # or "openai"
-  model: "meta-llama/Meta-Llama-3.1-8B-Instruct"
-  served_model_name: "Meta-Llama-3.1-8B-Instruct"
+  backend: "openai"
+  model: "meta-llama/Meta-Llama-3.1-405B-Instruct-FP8"
+  served_model_name: "meta-llama/Meta-Llama-3.1-405B-Instruct-FP8"
   chat_template: "{{- bos_token }}{%- for message in messages %}{{- '<|start_header_id|>' + message['role'] + '<|end_header_id|>\n\n'+ message['content'] | trim + '<|eot_id|>' }}{%- endfor %}{%- if add_generation_prompt %}{{- '<|start_header_id|>assistant<|end_header_id|>\n\n' }}{%- endif %}"
   base_url: "http://localhost:1234/v1" # if using openai backend
   api_key: "EMPTY" # if using openai backend
 
+  # default parameters for the model, can be overridden when requesting in code
   temperature: 0.8
-  max_tokens: 512
-  top_p: 0.9
+  max_tokens: 2048
+  top_p: 1.0
   stop: ["<|eot_id|>"]
 
 verification_model: # if Null then use the synthesis model to verify
 
 dataset:
-  path: "slm-research-vn/ultrachat_200k"
+  path: "slm-research-vn/slm-instruct-v0.1-filtered"
   instruction_column: "instruction"
   messages_column: "messages"
+  num_test: null # select n first examples of the dataset for testing, `null` means all examples
 
-save_dir: "synthesis_data/ultrachat_200k"
+batch_size: 1_000 # number of concurrent requests at one time, `null` mean no limit :D
+save_dir: "results_synthetic/from-preference__slm-instruct-v0.1-filtered"

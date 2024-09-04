@@ -6,5 +6,8 @@ def get_dataset(dataset_config: DatasetConfig):
         dataset = load_from_disk(dataset_config.path)
     except FileNotFoundError:
         dataset = load_dataset(dataset_config.path, split="train")
+    
+    if dataset_config.num_test:
+        dataset = dataset.select(range(dataset_config.num_test))
         
     return dataset

@@ -1,4 +1,4 @@
-from openai import OpenAI
+from openai import OpenAI, AsyncOpenAI
 from src.config import ModelConfig
 from typing import List, Dict
 from concurrent.futures import ThreadPoolExecutor
@@ -67,3 +67,41 @@ class OpenAIBackend:
             results = [future.result() for future in futures]
             
         return results
+    
+    
+class AsyncOpenAIBackend:
+    def __init__(self, model_config: ModelConfig):
+        self.model_config = model_config
+        self.client = AsyncOpenAI(api_key=model_config.api_key, base_url=model_config.base_url)
+        self.sampling_params = {
+            "temperature": self.model_config.temperature,
+            "top_p": self.model_config.top_p,
+            "max_tokens": self.model_config.max_tokens,
+            "stop": self.model_config.stop,
+        }
+
+    async def generate(self, text: str, sampling_params: Dict = None) -> str:
+        if not sampling_params:
+            sampling_params = self.sampling_params
+            
+        response = await self.client.completions.create(
+            model=self.model_config.served_model_name,
+            prompt=text,
+            timeout=30000,
+            **sampling_params
+        )
+        
+        return response.choices[0].text
+    
+    async def chat_generate(self, messages: List[Dict[str, str]], sampling_params: Dict = None) -> str:
+        if not sampling_params:
+            sampling_params = self.sampling_params
+            
+        response = await self.client.chat.completions.create(
+            model=self.model_config.served_model_name,
+            messages=messages,
+            timeout=30000,
+            **sampling_params
+        )
+        
+        return response.choices[0].message.content
