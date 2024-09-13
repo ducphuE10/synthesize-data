@@ -18,7 +18,9 @@ def process_engine_responses(response, mission):
     item = {}
     try:
         # tags_json = json.loads(response)
-        tags_json = eval(response)
+        tags_json = response.replace("\n", " ")
+        tags_json = eval(tags_json)
+        
         if mission == "difficulty":
             item["intent"] = tags_json["intent"]
             item["knowledge"] = tags_json["knowledge"]
@@ -45,7 +47,7 @@ def process_engine_responses(response, mission):
             item["difficulty"] = None
             item["difficulty_generator"] = None
         elif mission == "quality":
-            item["input_quality"] = None
+            item["quality"] = None
             item["quality_explanation"] = None
             item["quality_generator"] = None
         elif mission == "classification":
@@ -172,9 +174,12 @@ def main():
             result = {"instruction": lst_instructions[i], **item}
             results.append(result)
         
-        df = pd.DataFrame(results)
-        output_path = os.path.join(args.output_dir, f"{mission}_start-{args.start}_offset-{args.offset}.parquet")
-        df.to_parquet(output_path, index=False)
+        # df = pd.DataFrame(results)
+        # output_path = os.path.join(args.output_dir, f"{mission}_start-{args.start}_offset-{args.offset}.parquet")
+        # df.to_parquet(output_path, index=False)
+        output_path = os.path.join(args.output_dir, f"{mission}_start-{args.start}_offset-{args.offset}.json")
+        with open(output_path, "w") as f:
+            json.dump(results, f)
 
 if __name__ == "__main__":
     main()
