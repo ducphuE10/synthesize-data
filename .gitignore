@@ -1,6 +1,10 @@
-results
+data/
+legacy/
 logs
 collect_data/data
+results*
+synthesis_data
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
