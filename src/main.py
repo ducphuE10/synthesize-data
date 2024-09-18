@@ -3,6 +3,7 @@ import json
 import os
 import asyncio
 
+from src import utils
 from glob import glob
 from loguru import logger
 from transformers import AutoTokenizer
@@ -12,7 +13,7 @@ from src.data import get_dataset
 from src.llm import AsyncOpenAIBackend
 from tqdm import tqdm
 
-logger.add("logs/data_synthesis.log", rotation="10 MB", backtrace=True, diagnose=True)
+logger.add("logs/data_synthesis.log", rotation="10 MB", backtrace=True, diagnose=True, level="ERROR")
 
 async def is_related(current_messages: List[Dict[str, str]], next_message: Dict[str, str], tokenizer: AutoTokenizer, verification_model: AsyncOpenAIBackend) -> bool:
     conversation = "\n".join([f"{m['role']}: {m['content']}" for m in current_messages])
@@ -68,7 +69,10 @@ async def generate_bot_message(messages: List[Dict[str, str]], synthesis_model: 
 async def generate_user_message(messages: List[Dict[str, str]], synthesis_model: AsyncOpenAIBackend) -> str:
     assert messages[-1]["role"] == "assistant"
     
-    new_system_prompt = """You are a curious chatbot designed to ask insightful questions or provide high-quality instructions based on the user's message. Ensure that the conversation with the user flows naturally and smoothly."""
+    new_system_prompt = """You are a curious chatbot designed to ask insightful questions.\
+Your task is to ask a new question or provide a new instruction based on the conversation so far.\
+You should not provide any feedbacks to the user messages, just ask a new question or provide a new instruction.\
+The new question or instruction must be reasonable, coherent, and must be understood and responded by humans."""
     # reverse the role user -> assistant; assistant -> user
     role_reversed_messages = [
         {"role": "system", "content": new_system_prompt}
@@ -165,14 +169,14 @@ async def main():
     synthesis_model = AsyncOpenAIBackend(model_config=config.synthesis_model)
     verification_model = AsyncOpenAIBackend(model_config=config.verification_model)
     
-    lst_instructions = data["instruction"]
+    # lst_instructions = data["instruction"]
     lst_reference_messages = data["messages"]
     
     
     tasks = set()
     num_concurrents = config.batch_size
     
-    for i in range(0, len(lst_instructions)):
+    for i in range(0, len(lst_reference_messages)):
         if os.path.exists(os.path.join(cache_dir, f"{i}.json")):
             continue
         
@@ -182,6 +186,7 @@ async def main():
         
         print(f"starting task {i}")
         task = asyncio.create_task(synthesize_based_on_reference(brefeference_messages, tokenizer, synthesis_model, verification_model, dump_to=os.path.join(cache_dir, f"{i}.json")))
+        # task = asyncio.create_task(synthesize_expansion(brefeference_messages, synthesis_model, n=2, dump_to=os.path.join(cache_dir, f"{i}.json")))
         tasks.add(task)
         
     await asyncio.wait(tasks)
@@ -189,6 +194,7 @@ async def main():
     
     
     lst_cache_files = glob(f"{cache_dir}/*.json")
+    lst_cache_files = sorted(lst_cache_files, key=lambda x: int(x.split("/")[-1].split(".")[0]))
     results = []
     for cache_file in tqdm(lst_cache_files):
         with open(cache_file, "r") as f:

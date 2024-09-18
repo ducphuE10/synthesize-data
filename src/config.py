@@ -27,7 +27,14 @@ class DatasetConfig(BaseModel):
     path: str
     instruction_column: str
     messages_column: str
+    messages_type: str
     num_test: int | None = None
+    
+    @field_validator('messages_type')
+    def validate_backend(cls, v):
+        if v not in {'shareGPT', 'openAI'}:
+            raise ValueError('messages_type must be either "shareGPT" or "openAI"')
+        return v
 
 
 class Config(BaseModel):
