@@ -53,3 +53,31 @@ def validate_openAI(messages):
 def validate_shareGPT(conversations):
     messages = fmt_shareGPT_to_openAI(conversations)
     validate_openAI(messages)
+    
+    
+def get_user_messages_openAI(messages):
+    first_role = messages[0]["role"]
+    if first_role == "user":
+        user_message = messages[:1]
+    elif first_role == "system":
+        assert messages[1]["role"] == "user"
+        user_message = messages[:2]
+    else:
+        raise ValueError(f"Invalid first role {first_role}")
+
+    return user_message
+
+
+def get_user_messages_shareGPT(conversations):
+    messages = fmt_shareGPT_to_openAI(conversations)
+    return get_user_messages_openAI(messages)
+
+
+def get_instruction_openAI(messages):
+    user_message = get_user_messages_openAI(messages)
+    return user_message[-1]["content"]
+
+
+def get_instruction_shareGPT(conversations):
+    user_message = get_user_messages_shareGPT(conversations)
+    return user_message[-1]["content"]
