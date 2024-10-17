@@ -28,21 +28,21 @@ def main():
     parser = argparse.ArgumentParser()
     # model parameters
     parser.add_argument(
-        "--model_name", type=str, default="mistralai/Mistral-Large-Instruct-2407"
+        "--model_name", type=str, default="Qwen/Qwen2.5-72B-Instruct"
     )
-    parser.add_argument("--tp", type=int, default=1)
+    parser.add_argument("--tp", type=int, default=4)
 
     # generation parameters
-    parser.add_argument("--temperature", type=float, default=0.8)
+    parser.add_argument("--temperature", type=float, default=0.7)
     parser.add_argument("--max_tokens", type=int, default=2048)
-    parser.add_argument("--top_p", type=float, default=1.0)
-    parser.add_argument("--n", type=int, default=1)
+    parser.add_argument("--top_p", type=float, default=0.9)
+    parser.add_argument("--n", type=int, default=8)
 
     # data parameters
     parser.add_argument("--data_path", type=str)
-    parser.add_argument("--input_column", type=str, default="instruction")
+    parser.add_argument("--input_column", type=str, default="messages")
     parser.add_argument(
-        "--input_type", type=str, choices=["str", "openai", "sharegpt"], default="str"
+        "--input_type", type=str, choices=["str", "openai", "sharegpt"], default="openai"
     )
     parser.add_argument("--start", type=int, default=None)
     parser.add_argument("--offset", type=int, default=None)

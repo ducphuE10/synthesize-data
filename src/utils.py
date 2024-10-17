@@ -73,11 +73,15 @@ def get_user_messages_shareGPT(conversations):
     return get_user_messages_openAI(messages)
 
 
-def get_instruction_openAI(messages):
+def get_instruction_openAI(messages, combine_system_prompt=True):
     user_message = get_user_messages_openAI(messages)
-    return user_message[-1]["content"]
+    user_message_content = user_message[-1]["content"]
+    if combine_system_prompt and messages[0]["role"] == "system":
+        return messages[0]["content"] + "\n" + user_message_content
+    
+    return user_message_content
 
 
-def get_instruction_shareGPT(conversations):
-    user_message = get_user_messages_shareGPT(conversations)
-    return user_message[-1]["content"]
+def get_instruction_shareGPT(conversations, combine_system_prompt=True):
+    messages = fmt_shareGPT_to_openAI(conversations)
+    return get_instruction_openAI(messages, combine_system_prompt)
