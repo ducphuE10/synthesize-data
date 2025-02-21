@@ -40,16 +40,12 @@ Please label the task tags for the user query. You will need to analyze the user
 
 all_task_tags = [
     "Information seeking",  # Users ask for specific information or facts about various topics.
-    "Reasoning",  # Queries require logical thinking, problem-solving, or processing of complex ideas.
-    "Planning",  # Users need assistance in creating plans or strategies for activities and projects.
-    "Editing",  # Involves editing, rephrasing, proofreading, or other tasks related to the composition of general written content.
-    "Coding & Debugging",  # Users seek help with writing, reviewing, or fixing code in programming.
+    "Editing",  # Involves translating, editing, rephrasing, proofreading, or other tasks related to the composition of general written content.
+    "Coding & Debugging",  # Users seek help with coding, reviewing, or fixing code in programming.
+    "Data analysis",  # Requests involve interpreting data, statistics, or performing analytical tasks.
     "Math",  # Queries related to mathematical concepts, problems, and calculations.
     "Role playing",  # Users engage in scenarios requiring ChatGPT to adopt a character or persona.
-    "Data analysis",  # Requests involve interpreting data, statistics, or performing analytical tasks.
-    "Creative writing",  # Users seek assistance with crafting stories, poems, or other creative texts. 
     "Advice seeking",  # Users ask for recommendations or guidance on various personal or professional issues.
-    "Brainstorming",  # Involves generating ideas, creative thinking, or exploring possibilities. 
     "Others"  # Any queries that do not fit into the above categories or are of a miscellaneous nature.
 ]
 
@@ -73,7 +69,7 @@ You need to rate the quality of the user query based on its clarity, specificity
 
 The rating scale is as follows:
 
-- very poor: The query is unclear, vague, or incoherent. It lacks essential information and context.
+- very poor: The query is unclear, meaningless, vague, or incoherent. It lacks essential information and context. It contains much non-English words or critical error affecting the readability.
 - poor: The query is somewhat unclear or lacks important details. It requires significant clarification.
 - average: The query is moderately clear and specific. It may require some additional information for a complete understanding.
 - good: The query is clear, specific, and mostly well-formed. It provides sufficient context for understanding the user's intent.
